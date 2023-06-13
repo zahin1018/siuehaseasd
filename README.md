@@ -1,5 +1,8 @@
 # SchubiRat
 
+![Schubi](https://github.com/Schubilegend/SchubiRat/assets/90055814/aed7e598-c957-4441-b07e-ca70be0d579e)
+
+
 # Features
 - Impossible to delete the webhook
 - Good spam protection
