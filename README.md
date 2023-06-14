@@ -21,7 +21,7 @@
     - Desktop screenshot
     - Minecraft accounts saved in lunar client
     - Minecraft accounts saved in essential
-- Bypasses
+- Bypasses the restrictions on the max allowed key lenght
 - Isn't reliant on any third party file hosting service like [Anonfiles](https://anonfiles.com) or [Gofile](https://gofile.io)
 - Embeds and webhook customizable, no watermark
 
