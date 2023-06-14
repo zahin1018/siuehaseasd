@@ -89,4 +89,4 @@ The config is not reloaded automatically, so you have to restart the server for 
 | validate_session           | `true` or `false`               | If requests containing a invalid session id or one that isn't matching the uuid/ign of the minecraft account should be blocked |
 
 # DISCLAIMER
-I am not responsible for any damage caused by this program. This is for educational purposes only. Use at your own risk.
+**I am not responsible for any damage caused by this program. This is for educational purposes only. Use at your own risk.**
