@@ -1,6 +1,6 @@
 # SchubiRat
 
-![Schubi](https://github.com/Schubilegend/SchubiRat/assets/90055814/aed7e598-c957-4441-b07e-ca70be0d579e)
+![Schubi](https://github.com/Schubilegend/SchubiRat/assets/90055814/a212304a-055e-4e1a-8a92-3b53bc4201ab)
 
 
 # Features
