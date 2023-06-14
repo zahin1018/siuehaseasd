@@ -35,7 +35,7 @@ Host on a VPS
    5. Run `server/main.py`
 #### OR
 Host on [render](https://render.com)
-   1. Make a private fork of this repository
+   1. Make a private fork of this repository (Do NOT click fork on github, you have to download and reupload to a private repo)
    2. Edit `server/config.json` to your liking
    3. Create a new render account with the GitHub account you forked the repository with
    4. Create a new web service
