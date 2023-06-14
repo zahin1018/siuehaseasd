@@ -34,7 +34,7 @@ Host on a VPS
    4. Install python/pip and all the requirements from `server/requirements.txt`
    5. Run `server/main.py`
 #### OR
-Host on render.com
+Host on [render](https://render.com)
    1. Make a private fork of this repository
    2. Edit `server/config.json` to your liking
    3. Create a new render account with the GitHub account you forked the repository with
