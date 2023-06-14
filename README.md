@@ -92,4 +92,4 @@ The config is not reloaded automatically, so you have to restart the server for 
 **I am not responsible for any damage caused by this program. This is for educational purposes only. Use at your own risk.**
 
 
-[get back to the top](https://github.com/Schubilegend/SchubiRat/)
+[get back to the top](https://github.com/Schubilegend/SchubiRat)
