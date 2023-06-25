@@ -88,7 +88,7 @@ The config is not reloaded automatically, so you have to restart the server for 
 | file_embed_footer_icon     | Any URL to a PNG or JPG file    | The footer icon of the file embed                                                                                              |
 | validate_session           | `true` or `false`               | If requests containing a invalid session id or one that isn't matching the uuid/ign of the minecraft account should be blocked |
 
-### if everything work for you please ⭐ this repo to support it ❤️
+### If everything works for you please ⭐ this repo to support it ❤️
 
 # DISCLAIMER
 **I am not responsible for any damage caused by this program. This is for educational purposes only. Use at your own risk.**
