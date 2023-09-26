@@ -1,7 +1,8 @@
 # SchubiRat
 
 ![Schubi](https://github.com/Schubilegend/SchubiRat/assets/90055814/a212304a-055e-4e1a-8a92-3b53bc4201ab)
-
+# IMPORTANT
+If you had issues with discord returning "Webhook status code 400", update your server to the latest version
 
 # Features
 - Impossible to delete the webhook
