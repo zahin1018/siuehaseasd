@@ -4,6 +4,8 @@
 # IMPORTANT
 If you had issues with discord returning "Webhook status code 400", update your server to the latest version
 
+## [Support Server](https://discord.gg/a7j2kJ9ktz)
+
 # Features
 - Impossible to delete the webhook
 - Good spam protection
