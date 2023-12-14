@@ -56,7 +56,8 @@ Host on [render](https://render.com)
    3. Save and download the mod
 
    **Optional: Obfuscate the mod**
-   **If you habe too much money use [jnic](https://jnic.dev) nativ obfuscator for uncrackble obfuscation**
+
+   **If you have too much money use [jnic](https://jnic.dev) nativ obfuscator for uncrackble obfuscation**
 
 ### If everything works for you please ⭐ this repo to support it ❤️
 
